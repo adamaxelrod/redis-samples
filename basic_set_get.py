@@ -1,10 +1,38 @@
+""" ***************** """
 """basic_set_get.py"""
 """Description: Simple intro to Redis script that shows basic manipulation of string key"""
+""" ***************** """
+#""" Sample Run of the Redis Commands
+# 1540160740.290552 [0 [::1]:60283] "SET" "sampleKey" "sampleValue"
+# 1540160740.290727 [0 [::1]:60283] "SET" "sampleIntKey" "123"
+# 1540160740.290893 [0 [::1]:60283] "GET" "sampleKey"
+# 1540160740.291074 [0 [::1]:60283] "GET" "sampleIntKey"
+# 1540160740.291233 [0 [::1]:60283] "INCRBY" "sampleIntKey" "5"
+# 1540160740.291399 [0 [::1]:60283] "EXISTS" "sampleKey"
+# 1540160740.291904 [0 [::1]:60283] "TTL" "sampleKey"
+# 1540160740.292040 [0 [::1]:60283] "GET" "sampleKey"
+# 1540160740.292175 [0 [::1]:60283] "SETEX" "sampleKey" "5" "sampleValue"
+# 1540160740.292296 [0 [::1]:60283] "TTL" "sampleKey"
+# 1540160740.292426 [0 [::1]:60283] "TTL" "sampleKey"
+# 1540160740.292556 [0 [::1]:60283] "TTL" "sampleKey"
+# 1540160746.293662 [0 [::1]:60283] "GET" "sampleKey"
+# 1540160746.293979 [0 [::1]:60283] "APPEND" "sampleKey" "AppendedValue"
+# 1540160746.294175 [0 [::1]:60283] "GET" "sampleKey"
+# 1540160746.294371 [0 [::1]:60283] "DEL" "sampleKey"
+# 1540160746.294556 [0 [::1]:60283] "DEL" "sampleKeyInt"
+# 1540160746.294698 [0 [::1]:60283] "DBSIZE"
+# 1540160746.294835 [0 [::1]:60283] "INFO"
+# 1540160746.295587 [0 [::1]:60283] "DEL" "sampleKey"
+# 1540160746.295717 [0 [::1]:60283] "DEL" "sampleIntKey"
+#"""
+
 from redis import StrictRedis
 import util
 from util.custom_utils import *
 import os
 import time
+
+currStep = 1
 
 def init():
     """Basic connection to Redis"""
@@ -13,14 +41,9 @@ def init():
                         port=os.environ.get("REDIS_PORT", 6379),
                         db=0)
 
-    global currStep
-    """Global variable for clean printing purposes"""
-    currStep = 1
-
 
 def run_basic_tests():
     """Iterate through some basic functionality"""
-    init()
     run_basic_set()
     show_ttl()
     show_append()
@@ -72,10 +95,24 @@ def show_basicOps():
     print_results("Redis server info: " + str(redis.info()))
 
 
+def teardown():
+    """Remove all keys that were created"""
+    redis.delete("sampleKey")
+    redis.delete("sampleIntKey")
+
+
 def print_results(msg):
     global currStep
     custom_print(currStep, msg)
     currStep = currStep + 1
 
 
-run_basic_tests()
+def main():
+    """Main method"""
+    init()
+    run_basic_tests()
+    teardown()
+
+
+if __name__ == "__main__":
+    main()
