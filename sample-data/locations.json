@@ -1,0 +1,34 @@
+[
+  {
+    "keyName": "locations:ArloHQ",
+    "name": "Arlo Office",
+    "city": "San Jose",
+    "state": "California",
+    "latitude": "37.394848",
+    "longitude": "-121.925433"
+  },
+  {
+    "keyName": "locations:EmpireStateBuilding",
+    "name": "Empire State Building",
+    "city": "New York",
+    "state": "New York",
+    "latitude": "40.748757",
+    "longitude": "-73.985675"
+  },
+  {
+    "keyName": "locations:GrandCanyon",
+    "name": "Grand Canyon",
+    "city": "Grand Canyon Village",
+    "state": "Arizona",
+    "latitude": "36.126062",
+    "longitude": "-112.100177"
+  },
+  {
+    "keyName": "locations:USCapitol",
+    "name": "US Capitol Building",
+    "city": "Washington",
+    "state": "DC",
+    "latitude": "38.890173",
+    "longitude": "77.009104"
+  }
+]
