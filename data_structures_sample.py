@@ -66,15 +66,27 @@ redis = None
 redis_pipeline = None
 currStep = 1
 testHashKey = "locations:ArloHQ"
+testHashKey2 = "locations:USCapitol"
 testSetKey = "locations"
+testSortedSetKey = "sortedLocations"
 testCity = "San Jose"
+geoLocationsKey = "geoLocations"
+radius = 500
 
 def init():
-    """Basic connection to Redis"""
-    global redis
-    redis = StrictRedis(host=os.environ.get("REDIS_HOST", "localhost"),
-                        port=os.environ.get("REDIS_PORT", 6379),
-                        db=0)
+    custom_print_separator()
+
+    try:
+        """Basic connection to Redis"""
+        global redis
+        redis = StrictRedis(host=os.environ.get("REDIS_HOST", "localhost"),
+                            port=os.environ.get("REDIS_PORT", 6379),
+                            db=0)
+        if redis.ping():
+            print("Connected to Redis")
+    except:
+        print("Cannot connect to redis")
+        sys.exit(1)
 
 
 def run_basic_tests():
@@ -82,33 +94,44 @@ def run_basic_tests():
     load_data()
     show_hash_functions()
     show_set_functions()
+    show_geo_functions()
 
 
 def load_data(file="sample-data/locations.json"):
-    """Load data from flat file"""
-    f = open(file)
-    locations = json.load(f)
+    custom_print_separator()
 
-    """Store location entries in a Redis hash and store list of unique locations in Set"""
-    """Combining redis operations together into a pipeline (multi/exec flow)"""
-    for i in range(len(locations)):
-        v = locations[i]
-        redis_pipeline.hmset(v['keyName'], v)
-        print_results("Storing hash for: " + str(v['keyName']))
+    try:
+        """Load data from flat file"""
+        f = open(file)
+        locations = json.load(f)
 
-        redis_pipeline.sadd("locations", v['city'])
-        print_results("Storing set entry for: " + str(v['city']))
+        """Store location entries in a Redis hash and store list of unique locations in Set"""
+        """Combining redis operations together into a pipeline (multi/exec flow)"""
+        for i in range(len(locations)):
+            v = locations[i]
+            redis_pipeline.hmset(v['keyName'], v)
+            print_results("Storing hash for: " + str(v['keyName']))
 
-        redis_pipeline.geoadd("geoLocations", v['longitude'], v['latitude'], v['keyName'])
-        print_results("Storing geo entry for: " + str(v['keyName']))
-        redis_pipeline.execute()
+            print_results("Storing set entry for: " + str(v['city']))
+            redis_pipeline.sadd(testSetKey, v['city'])
 
-    print_results("Retrieval of the first entity of the hash: " + str(redis.hgetall(locations[0]['keyName'])))
-    print_results("List of all members in set: " + str(redis.smembers("locations")))
-    print_results("List of all members of geolocations: " + str(redis.zrange("geoLocations", 0, len(locations), True, True)))
+            print_results("Storing geo entry for: " + str(v['keyName']))
+            redis_pipeline.geoadd(geoLocationsKey, v['longitude'], v['latitude'], v['keyName'])
+
+            """ Execute the pipeline set of steps """
+            redis_pipeline.execute()
+
+        print_results("Retrieval of the first entity of the hash: " + str(redis.hgetall(locations[0]['keyName'])))
+        print_results("List of all members in set: " + str(redis.smembers(testSetKey)))
+        print_results("List of all members of geolocations: " + str(redis.zrange(geoLocationsKey, 0, len(locations), True, True)))
+    except:
+        print("Error reading file or storing data")
 
 
 def show_hash_functions():
+    custom_print_separator()
+
+    """ Retrieve all values for a particular hash """
     print_results("Get values for a specific hash with key - " + testHashKey + ": " + str(redis.hgetall(testHashKey)))
 
     """ locations:ArloHQ -> city = "NEW-SanJose """
@@ -125,6 +148,8 @@ def show_hash_functions():
 
 
 def show_set_functions():
+    custom_print_separator()
+
     print_results("Get values for a Set with key - " + testSetKey + ": " + str(redis.smembers(testSetKey)))
 
     """ locations add "NEW-CITY" """
@@ -142,20 +167,50 @@ def show_set_functions():
     """ Now, take the union of the old set and the new set where the entry was moved to """
     print_results("Union of two sets: " + str(redis.sunion(testSetKey, "newSet")))
 
+    """ Convert the Set to a SortedSet """
+    for i in redis.smembers(testSetKey):
+        redis.zadd(testSortedSetKey, 1, i)
+
+    print_results("Sorted Set results: " + str(redis.zrangebyscore(testSortedSetKey, 0, redis.zcard(testSortedSetKey), None, None, True)))
+    print_results("Sorted Set cardinality: " + str(redis.zcard(testSortedSetKey)))
+    
+
+def show_geo_functions():
+    custom_print_separator()
+
+    """ Get latitude/longitude from the test hash key and then use those values for georadius """
+    longitude = redis.hget(testHashKey, "longitude")
+    latitude = redis.hget(testHashKey, "latitude")
+    print_results("Entries that are within " + str(radius) + " km from " + testHashKey + ": " +
+                  str(redis.georadius(geoLocationsKey, longitude, latitude, radius, "km")))
+
+    """ Use of georadiusbymember to use an existing key as a search value """
+    print_results("Entries that are within " + str(radius + 1000) + " km from " + testHashKey + ": " +
+                  str(redis.georadiusbymember(geoLocationsKey, testHashKey, radius + 1000, "km")))
+
+    print_results("Entries that are within " + str(radius + 15000) + " km from " + testHashKey + ": " +
+                  str(redis.georadiusbymember(geoLocationsKey, testHashKey, radius + 15000, "km")))
+
+    """ Distance between 2 keys """
+    print_results("Distance between 2 locations: " + testHashKey + " and " + testHashKey2 + " is: " +
+                 str(redis.geodist(geoLocationsKey, testHashKey, testHashKey2, "km")) + " km")
+
 
 def teardown():
+    custom_print_separator()
+
     """ Delete geolocations set """
-    redis_pipeline.delete("geoLocations")
+    redis_pipeline.delete(geoLocationsKey)
 
     """ Delete locations set """
-    redis_pipeline.delete("locations")
+    redis_pipeline.delete(testSetKey)
 
     """ Complete the pipeline """
     redis_pipeline.execute()
 
     """ Retrieve all the hash keys first matching a particular pattern, then iterate and delete each """
     for i in redis.scan_iter("locations:*"):
-        print_results("Key: " + str(i))
+        print_results("Deleting Key: " + str(i))
         redis.delete(i)
 
     print_results("Deleting all entries")

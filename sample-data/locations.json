@@ -30,5 +30,13 @@
     "state": "DC",
     "latitude": "38.890173",
     "longitude": "77.009104"
+  },
+  {
+    "keyName": "locations:PearlHarbor",
+    "name": "Pearl Harbor",
+    "city": "Honolulu",
+    "state": "HI",
+    "latitude": "21.355813",
+    "longitude": "-157.975957"
   }
 ]

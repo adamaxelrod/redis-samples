@@ -32,16 +32,22 @@ import util
 from util.custom_utils import *
 import os
 import time
+import sys
 
 currStep = 1
 
 def init():
-    """Basic connection to Redis"""
-    global redis
-    redis = StrictRedis(host=os.environ.get("REDIS_HOST", "localhost"),
-                        port=os.environ.get("REDIS_PORT", 6379),
-                        db=0)
-
+    try:
+        """Basic connection to Redis"""
+        global redis
+        redis = StrictRedis(host=os.environ.get("REDIS_HOST", "localhost"),
+                            port=os.environ.get("REDIS_PORT", 6379),
+                            db=0)
+        if redis.ping():
+            print("Connected to Redis")
+    except:
+        print("Cannot connect to redis")
+        sys.exit(1)
 
 def run_basic_tests():
     """Iterate through some basic functionality"""
