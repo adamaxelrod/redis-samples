@@ -1,7 +1,12 @@
-""" ***************** """
-"""basic_set_get.py"""
-"""Description: Simple intro to Redis script that shows basic manipulation of string key"""
-""" ***************** """
+""" ************************************************************************************************************************** """
+""" File: basic_set_get.py"""
+"""
+    Description: Demo of a few of the basic Redis string capabilities
+                 including gets, sets, appends, and TTLs.
+"""
+""" Author: Adam Axelrod """
+""" Revision: October 2018 """
+""" ************************************************************************************************************************** """
 #""" Sample Run of the Redis Commands
 # 1540160740.290552 [0 [::1]:60283] "SET" "sampleKey" "sampleValue"
 # 1540160740.290727 [0 [::1]:60283] "SET" "sampleIntKey" "123"
@@ -82,7 +87,7 @@ def show_ttl():
 
     time.sleep(redis.ttl("sampleKey") + 1)
 
-    print_results(str(redis.get("sampleKey")))
+    print_results("Entry after TTL expired: " + str(redis.get("sampleKey")))
 
 def show_append():
     """Basic appending of a string"""
