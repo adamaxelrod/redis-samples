@@ -256,15 +256,14 @@ def print_results(msg):
     currStep = currStep + 1
 
 
-def main():
+def main(argv):
     init()
     global redis
     global redis_pipeline
     redis_pipeline = redis.pipeline()
-
     run_basic_tests()
     teardown()
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

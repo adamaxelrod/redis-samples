@@ -9,11 +9,15 @@
 """ ************************************************************************************************************************** """
 
 from redis import StrictRedis
+from dateutil.parser import *
+
 import os
 import sys
 import util
 import time
 import json
+import datetime
+import dateutil
 
 from util.custom_utils import *
 
@@ -41,20 +45,30 @@ def init():
         sys.exit(1)
 
 
-def create_status_object_hash(i):
+def upsert_status_object_hash(i):
     """ Create a Redis hash object for this key """
     hashKey = "device:DEVID-" + str(i);
     hashAttrDict = {'status': 'online', 'power': 'on', 'batteryLevel': '15'}
     redis.hmset(hashKey, hashAttrDict);
+
     print_results("Creating hash for: " + hashKey);
+
+    """ Publish an update message to any subscribers """
+    channel = "channel-" + str(i % 2)
+    redis.publish(channel, "Update for key: " + hashKey)
 
 
 def generate_data():
     """ Iterate through n elements """
     global n
-    for i in range(1, numEntries):
-        create_status_object_hash(i);
+    starttime = datetime.datetime.now()
 
+    for i in range(1, numEntries):
+        upsert_status_object_hash(i)
+
+    endtime = datetime.datetime.now()
+    print("Start, End Times: "  + str(starttime) + ", " + str(endtime))
+    print(str(numEntries) + " records: " + str((endtime - starttime).total_seconds()) + " msec\n\n")
 
 def simulate_updates():
     for i in range(1, iterations):
@@ -84,17 +98,19 @@ def print_results(msg):
     currStep = currStep + 1
 
 
-def main():
+def main(argv):
     init()
     global redis
     global redis_pipeline
     redis_pipeline = redis.pipeline()
 
+    global numEntries
+    numEntries = int(sys.argv[1])
     generate_data()
-    # start_pubsub()
+
     simulate_updates()
     teardown()
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
