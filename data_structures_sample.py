@@ -11,79 +11,78 @@
 """ Author: Adam Axelrod """
 """ Revision: October 2018 """
 """ ************************************************************************************************************************** """
-#""" Sampling Run of the Redis Commands
-# 1540299537.538282 [0 [::1]:55511] "PING"
-# 1540299537.540649 [0 [::1]:55511] "MULTI"
-# 1540299537.540669 [0 [::1]:55511] "HMSET" "locations:ArloHQ" "city" "San Jose" "name" "Arlo Office" "longitude" "-121.925433" "state" "California" "keyName" "locations:ArloHQ" "latitude" "37.394848"
-# 1540299537.540961 [0 [::1]:55511] "SADD" "locations" "San Jose"
-# 1540299537.540972 [0 [::1]:55511] "GEOADD" "geoLocations" "-121.925433" "37.394848" "locations:ArloHQ"
-# 1540299537.541676 [0 [::1]:55511] "EXEC"
-# 1540299537.542142 [0 [::1]:55511] "MULTI"
-# 1540299537.542159 [0 [::1]:55511] "HMSET" "locations:EmpireStateBuilding" "city" "New York" "name" "Empire State Building" "longitude" "-73.985675" "state" "New York" "keyName" "locations:EmpireStateBuilding" "latitude" "40.748757"
-# 1540299537.542195 [0 [::1]:55511] "SADD" "locations" "New York"
-# 1540299537.542202 [0 [::1]:55511] "GEOADD" "geoLocations" "-73.985675" "40.748757" "locations:EmpireStateBuilding"
-# 1540299537.542346 [0 [::1]:55511] "EXEC"
-# 1540299537.542624 [0 [::1]:55511] "MULTI"
-# 1540299537.542636 [0 [::1]:55511] "HMSET" "locations:GrandCanyon" "city" "Grand Canyon Village" "name" "Grand Canyon" "longitude" "-112.100177" "state" "Arizona" "keyName" "locations:GrandCanyon" "latitude" "36.126062"
-# 1540299537.542655 [0 [::1]:55511] "SADD" "locations" "Grand Canyon Village"
-# 1540299537.542660 [0 [::1]:55511] "GEOADD" "geoLocations" "-112.100177" "36.126062" "locations:GrandCanyon"
-# 1540299537.542674 [0 [::1]:55511] "EXEC"
-# 1540299537.542940 [0 [::1]:55511] "MULTI"
-# 1540299537.542955 [0 [::1]:55511] "HMSET" "locations:USCapitol" "city" "Washington" "name" "US Capitol Building" "longitude" "77.009104" "state" "DC" "keyName" "locations:USCapitol" "latitude" "38.890173"
-# 1540299537.542983 [0 [::1]:55511] "SADD" "locations" "Washington"
-# 1540299537.542987 [0 [::1]:55511] "GEOADD" "geoLocations" "77.009104" "38.890173" "locations:USCapitol"
-# 1540299537.543001 [0 [::1]:55511] "EXEC"
-# 1540299537.543304 [0 [::1]:55511] "MULTI"
-# 1540299537.543326 [0 [::1]:55511] "HMSET" "locations:PearlHarbor" "city" "Honolulu" "name" "Pearl Harbor" "longitude" "-157.975957" "state" "HI" "keyName" "locations:PearlHarbor" "latitude" "21.355813"
-# 1540299537.543355 [0 [::1]:55511] "SADD" "locations" "Honolulu"
-# 1540299537.543362 [0 [::1]:55511] "GEOADD" "geoLocations" "-157.975957" "21.355813" "locations:PearlHarbor"
-# 1540299537.543385 [0 [::1]:55511] "EXEC"
-# 1540299537.543524 [0 [::1]:55511] "HGETALL" "locations:ArloHQ"
-# 1540299537.543755 [0 [::1]:55511] "SMEMBERS" "locations"
-# 1540299537.543972 [0 [::1]:55511] "ZREVRANGE" "geoLocations" "0" "5" "WITHSCORES"
-# 1540299537.544193 [0 [::1]:55511] "HGETALL" "locations:ArloHQ"
-# 1540299537.544357 [0 [::1]:55511] "HSET" "locations:ArloHQ" "city" "NEW-SanJose"
-# 1540299537.544474 [0 [::1]:55511] "HGETALL" "locations:ArloHQ"
-# 1540299537.544684 [0 [::1]:55511] "HSET" "locations:ArloHQ" "newAttr" "newValue"
-# 1540299537.544783 [0 [::1]:55511] "HGETALL" "locations:ArloHQ"
-# 1540299537.544947 [0 [::1]:55511] "HDEL" "locations:ArloHQ" "newAttr"
-# 1540299537.545036 [0 [::1]:55511] "HGETALL" "locations:ArloHQ"
-# 1540299537.545249 [0 [::1]:55511] "SMEMBERS" "locations"
-# 1540299537.545406 [0 [::1]:55511] "SADD" "locations" "NEW-CITY"
-# 1540299537.545500 [0 [::1]:55511] "SMEMBERS" "locations"
-# 1540299537.545662 [0 [::1]:55511] "SREM" "locations" "newAttr"
-# 1540299537.545754 [0 [::1]:55511] "SMEMBERS" "locations"
-# 1540299537.545916 [0 [::1]:55511] "SMOVE" "locations" "newSet" "San Jose"
-# 1540299537.546008 [0 [::1]:55511] "SMEMBERS" "locations"
-# 1540299537.546141 [0 [::1]:55511] "SMEMBERS" "newSet"
-# 1540299537.546266 [0 [::1]:55511] "SUNION" "locations" "newSet"
-# 1540299537.546419 [0 [::1]:55511] "SMEMBERS" "locations"
-# 1540299537.546548 [0 [::1]:55511] "ZADD" "sortedLocations" "1" "NEW-CITY"
-# 1540299537.546653 [0 [::1]:55511] "ZADD" "sortedLocations" "1" "New York"
-# 1540299537.546768 [0 [::1]:55511] "ZADD" "sortedLocations" "1" "Washington"
-# 1540299537.546903 [0 [::1]:55511] "ZADD" "sortedLocations" "1" "Honolulu"
-# 1540299537.547066 [0 [::1]:55511] "ZADD" "sortedLocations" "1" "Grand Canyon Village"
-# 1540299537.547180 [0 [::1]:55511] "ZCARD" "sortedLocations"
-# 1540299537.547318 [0 [::1]:55511] "ZRANGEBYSCORE" "sortedLocations" "0" "5" "WITHSCORES"
-# 1540299537.547530 [0 [::1]:55511] "ZCARD" "sortedLocations"
-# 1540299537.547906 [0 [::1]:55511] "HGET" "locations:ArloHQ" "longitude"
-# 1540299537.548045 [0 [::1]:55511] "HGET" "locations:ArloHQ" "latitude"
-# 1540299537.548171 [0 [::1]:55511] "GEORADIUS" "geoLocations" "-121.925433" "37.394848" "500" "km"
-# 1540299537.548502 [0 [::1]:55511] "GEORADIUSBYMEMBER" "geoLocations" "locations:ArloHQ" "1500" "km"
-# 1540299537.548693 [0 [::1]:55511] "GEORADIUSBYMEMBER" "geoLocations" "locations:ArloHQ" "15500" "km"
-# 1540299537.548880 [0 [::1]:55511] "GEODIST" "geoLocations" "locations:ArloHQ" "locations:USCapitol" "km"
-# 1540299537.549569 [0 [::1]:55511] "MULTI"
-# 1540299537.549585 [0 [::1]:55511] "DEL" "geoLocations"
-# 1540299537.549593 [0 [::1]:55511] "DEL" "locations"
-# 1540299537.549603 [0 [::1]:55511] "EXEC"
-# 1540299537.550010 [0 [::1]:55511] "SCAN" "0" "MATCH" "locations:*"
-# 1540299537.550269 [0 [::1]:55511] "DEL" "locations:USCapitol"
-# 1540299537.550438 [0 [::1]:55511] "DEL" "locations:GrandCanyon"
-# 1540299537.550576 [0 [::1]:55511] "DEL" "locations:PearlHarbor"
-# 1540299537.550680 [0 [::1]:55511] "SCAN" "11" "MATCH" "locations:*"
-# 1540299537.550826 [0 [::1]:55511] "DEL" "locations:EmpireStateBuilding"
-# 1540299537.550921 [0 [::1]:55511] "DEL" "locations:ArloHQ
-#"""
+# --- Sampling Run of the Redis Commands ---
+# 1540525496.503549 [0 [::1]:64554] "PING"
+# 1540525496.504008 [0 [::1]:64554] "MULTI"
+# 1540525496.504025 [0 [::1]:64554] "HMSET" "locations:ArloHQ" "city" "San Jose" "name" "Arlo Office" "longitude" "-121.925433" "state" "California" "keyName" "locations:ArloHQ" "latitude" "37.394848"
+# 1540525496.504044 [0 [::1]:64554] "SADD" "locations" "San Jose"
+# 1540525496.504052 [0 [::1]:64554] "GEOADD" "geoLocations" "-121.925433" "37.394848" "locations:ArloHQ"
+# 1540525496.504072 [0 [::1]:64554] "EXEC"
+# 1540525496.504387 [0 [::1]:64554] "MULTI"
+# 1540525496.504401 [0 [::1]:64554] "HMSET" "locations:EmpireStateBuilding" "city" "New York" "name" "Empire State Building" "longitude" "-73.985675" "state" "New York" "keyName" "locations:EmpireStateBuilding" "latitude" "40.748757"
+# 1540525496.504460 [0 [::1]:64554] "SADD" "locations" "New York"
+# 1540525496.504465 [0 [::1]:64554] "GEOADD" "geoLocations" "-73.985675" "40.748757" "locations:EmpireStateBuilding"
+# 1540525496.504481 [0 [::1]:64554] "EXEC"
+# 1540525496.504738 [0 [::1]:64554] "MULTI"
+# 1540525496.504749 [0 [::1]:64554] "HMSET" "locations:GrandCanyon" "city" "Grand Canyon Village" "name" "Grand Canyon" "longitude" "-112.100177" "state" "Arizona" "keyName" "locations:GrandCanyon" "latitude" "36.126062"
+# 1540525496.504768 [0 [::1]:64554] "SADD" "locations" "Grand Canyon Village"
+# 1540525496.504773 [0 [::1]:64554] "GEOADD" "geoLocations" "-112.100177" "36.126062" "locations:GrandCanyon"
+# 1540525496.504787 [0 [::1]:64554] "EXEC"
+# 1540525496.505066 [0 [::1]:64554] "MULTI"
+# 1540525496.505077 [0 [::1]:64554] "HMSET" "locations:USCapitol" "city" "Washington" "name" "US Capitol Building" "longitude" "-77.009104" "state" "DC" "keyName" "locations:USCapitol" "latitude" "38.890173"
+# 1540525496.505094 [0 [::1]:64554] "SADD" "locations" "Washington"
+# 1540525496.505099 [0 [::1]:64554] "GEOADD" "geoLocations" "-77.009104" "38.890173" "locations:USCapitol"
+# 1540525496.505113 [0 [::1]:64554] "EXEC"
+# 1540525496.505373 [0 [::1]:64554] "MULTI"
+# 1540525496.505384 [0 [::1]:64554] "HMSET" "locations:PearlHarbor" "city" "Honolulu" "name" "Pearl Harbor" "longitude" "-157.975957" "state" "HI" "keyName" "locations:PearlHarbor" "latitude" "21.355813"
+# 1540525496.505401 [0 [::1]:64554] "SADD" "locations" "Honolulu"
+# 1540525496.505406 [0 [::1]:64554] "GEOADD" "geoLocations" "-157.975957" "21.355813" "locations:PearlHarbor"
+# 1540525496.505420 [0 [::1]:64554] "EXEC"
+# 1540525496.505587 [0 [::1]:64554] "HGETALL" "locations:ArloHQ"
+# 1540525496.505796 [0 [::1]:64554] "SMEMBERS" "locations"
+# 1540525496.505987 [0 [::1]:64554] "ZREVRANGE" "geoLocations" "0" "5" "WITHSCORES"
+# 1540525496.506193 [0 [::1]:64554] "HGETALL" "locations:ArloHQ"
+# 1540525496.506425 [0 [::1]:64554] "HSET" "locations:ArloHQ" "city" "NEW-SanJose"
+# 1540525496.506526 [0 [::1]:64554] "HGETALL" "locations:ArloHQ"
+# 1540525496.506748 [0 [::1]:64554] "HSET" "locations:ArloHQ" "newAttr" "newValue"
+# 1540525496.506855 [0 [::1]:64554] "HGETALL" "locations:ArloHQ"
+# 1540525496.507114 [0 [::1]:64554] "HDEL" "locations:ArloHQ" "newAttr"
+# 1540525496.507214 [0 [::1]:64554] "HGETALL" "locations:ArloHQ"
+# 1540525496.507407 [0 [::1]:64554] "SMEMBERS" "locations"
+# 1540525496.507548 [0 [::1]:64554] "SADD" "locations" "NEW-CITY"
+# 1540525496.507639 [0 [::1]:64554] "SMEMBERS" "locations"
+# 1540525496.507825 [0 [::1]:64554] "SREM" "locations" "NEW-CITY"
+# 1540525496.507909 [0 [::1]:64554] "SMEMBERS" "locations"
+# 1540525496.508065 [0 [::1]:64554] "SMOVE" "locations" "newSet" "San Jose"
+# 1540525496.508151 [0 [::1]:64554] "SMEMBERS" "locations"
+# 1540525496.508281 [0 [::1]:64554] "SMEMBERS" "newSet"
+# 1540525496.508415 [0 [::1]:64554] "SUNION" "locations" "newSet"
+# 1540525496.508745 [0 [::1]:64554] "SMEMBERS" "locations"
+# 1540525496.508886 [0 [::1]:64554] "ZADD" "sortedLocations" "1" "New York"
+# 1540525496.509005 [0 [::1]:64554] "ZADD" "sortedLocations" "1" "Washington"
+# 1540525496.509129 [0 [::1]:64554] "ZADD" "sortedLocations" "1" "Honolulu"
+# 1540525496.509226 [0 [::1]:64554] "ZADD" "sortedLocations" "1" "Grand Canyon Village"
+# 1540525496.509352 [0 [::1]:64554] "ZCARD" "sortedLocations"
+# 1540525496.509497 [0 [::1]:64554] "ZRANGEBYSCORE" "sortedLocations" "0" "5" "WITHSCORES"
+# 1540525496.509701 [0 [::1]:64554] "ZCARD" "sortedLocations"
+# 1540525496.509868 [0 [::1]:64554] "HGET" "locations:ArloHQ" "longitude"
+# 1540525496.509974 [0 [::1]:64554] "HGET" "locations:ArloHQ" "latitude"
+# 1540525496.510105 [0 [::1]:64554] "GEORADIUS" "geoLocations" "-121.925433" "37.394848" "500" "km"
+# 1540525496.510250 [0 [::1]:64554] "GEORADIUSBYMEMBER" "geoLocations" "locations:ArloHQ" "1500" "km"
+# 1540525496.510438 [0 [::1]:64554] "GEORADIUSBYMEMBER" "geoLocations" "locations:ArloHQ" "5500" "km"
+# 1540525496.510639 [0 [::1]:64554] "GEODIST" "geoLocations" "locations:ArloHQ" "locations:USCapitol" "km"
+# 1540525496.510765 [0 [::1]:64554] "GEODIST" "geoLocations" "locations:ArloHQ" "locations:USCapitol" "mi"
+# 1540525496.510922 [0 [::1]:64554] "MULTI"
+# 1540525496.510929 [0 [::1]:64554] "DEL" "geoLocations"
+# 1540525496.510934 [0 [::1]:64554] "DEL" "locations"
+# 1540525496.510939 [0 [::1]:64554] "EXEC"
+# 1540525496.511085 [0 [::1]:64554] "SCAN" "0" "MATCH" "locations:*"
+# 1540525496.511248 [0 [::1]:64554] "DEL" "locations:ArloHQ"
+# 1540525496.511390 [0 [::1]:64554] "DEL" "locations:USCapitol"
+# 1540525496.511489 [0 [::1]:64554] "DEL" "locations:GrandCanyon"
+# 1540525496.511613 [0 [::1]:64554] "DEL" "locations:EmpireStateBuilding"
+# 1540525496.511733 [0 [::1]:64554] "DEL" "locations:PearlHarbor"
+# ---
 
 from redis import StrictRedis
 import os
@@ -124,7 +123,7 @@ def init():
 
 
 def run_basic_tests():
-    """Iterate through some basic functionality"""
+    """Iterate through some basic functionality on different data structures"""
     load_data()
     show_hash_functions()
     show_set_functions()
@@ -191,7 +190,7 @@ def show_set_functions():
     print_results("Add new value to an existing Set with key - " + testSetKey + ": " + str(redis.smembers(testSetKey)))
 
     """ Remove locations:ArloHQ -> newAttr """
-    redis.srem(testSetKey, "newAttr")
+    redis.srem(testSetKey, "NEW-CITY")
     print_results("Remove value from existing hash with key - " + testSetKey + ": " + str(redis.smembers(testSetKey)))
 
     """ Moving San Jose from one set to another """
@@ -213,7 +212,7 @@ def show_geo_functions():
     custom_print_separator()
 
     """ Get latitude/longitude from the test hash key and then use those values for georadius """
-    longitude = redis.hget(testHashKey, "longitude")
+        longitude = redis.hget(testHashKey, "longitude")
     latitude = redis.hget(testHashKey, "latitude")
     print_results("Entries that are within " + str(radius) + " km from " + testHashKey + ": " +
                   str(redis.georadius(geoLocationsKey, longitude, latitude, radius, "km")))
@@ -222,12 +221,15 @@ def show_geo_functions():
     print_results("Entries that are within " + str(radius + 1000) + " km from " + testHashKey + ": " +
                   str(redis.georadiusbymember(geoLocationsKey, testHashKey, radius + 1000, "km")))
 
-    print_results("Entries that are within " + str(radius + 15000) + " km from " + testHashKey + ": " +
-                  str(redis.georadiusbymember(geoLocationsKey, testHashKey, radius + 15000, "km")))
+    print_results("Entries that are within " + str(radius + 5000) + " km from " + testHashKey + ": " +
+                  str(redis.georadiusbymember(geoLocationsKey, testHashKey, radius + 5000, "km")))
 
     """ Distance between 2 keys """
     print_results("Distance between 2 locations: " + testHashKey + " and " + testHashKey2 + " is: " +
                  str(redis.geodist(geoLocationsKey, testHashKey, testHashKey2, "km")) + " km")
+
+    print_results("Distance between 2 locations: " + testHashKey + " and " + testHashKey2 + " is: " +
+                 str(redis.geodist(geoLocationsKey, testHashKey, testHashKey2, "mi")) + " mi")
 
 
 def teardown():
@@ -258,9 +260,11 @@ def print_results(msg):
 
 def main(argv):
     init()
+
     global redis
     global redis_pipeline
     redis_pipeline = redis.pipeline()
+
     run_basic_tests()
     teardown()
 

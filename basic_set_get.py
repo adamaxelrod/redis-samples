@@ -7,7 +7,7 @@
 """ Author: Adam Axelrod """
 """ Revision: October 2018 """
 """ ************************************************************************************************************************** """
-#""" Sample Run of the Redis Commands
+#""" Sample Run of the Redis Commandsx
 # 1540160740.290552 [0 [::1]:60283] "SET" "sampleKey" "sampleValue"
 # 1540160740.290727 [0 [::1]:60283] "SET" "sampleIntKey" "123"
 # 1540160740.290893 [0 [::1]:60283] "GET" "sampleKey"

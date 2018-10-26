@@ -26,7 +26,7 @@ redis = None
 redis_pipeline = None
 currStep = 1
 numEntries = 1000000
-iterations = 5
+iterations = 1
 
 hashPrefix = "deviceHash:"
 setPrefix = "locations:"
@@ -37,11 +37,13 @@ def init():
     custom_print_separator()
 
     try:
-        """Basic connection to Redis"""
+        """ Basic connection to Redis (non-clustered)"""
         global redis
         redis = StrictRedis(host=os.environ.get("REDIS_HOST", "localhost"),
                             port=os.environ.get("REDIS_PORT", 6379),
                             db=0)
+
+        """ Verify successful connection """
         if redis.ping():
             print("Connected to Redis")
     except Exception as e:
@@ -78,7 +80,6 @@ def publish_status_updates(deviceId):
         channelSet = redis.smembers(setKey)
 
         for channel in channelSet:
-            print_results("Publishing to channel: " + channel)
             redis.publish(channel, "Update for key: " + setKey)
     except Exception as e:
         print("Exception while trying to publish to Redis: " + str(e))
@@ -86,22 +87,28 @@ def publish_status_updates(deviceId):
 
 
 def generate_data():
-    """ Iterate through n elements """
-    global n
     starttime = datetime.datetime.now()
 
+    """ Iterate through numEntries elements """
     for i in range(1, numEntries):
         global deviceIdPrefix
         deviceId = deviceIdPrefix + str(i)
+
+        """ First update the hash for this device """
+        """ Pass whether this is even or odd number for publishing purposes """
         upsert_status_object_hash(deviceId, i % 2)
+
+        """ Publish to the list of corresponding channels """
         publish_status_updates(deviceId)
 
     endtime = datetime.datetime.now()
+
     print("Start, End Times: "  + str(starttime) + ", " + str(endtime))
     print(str(numEntries) + " records: " + str((endtime - starttime).total_seconds()) + " msec\n\n")
 
 
 def simulate_updates():
+    """ Simulate continuous device updates """
     for i in range(1, iterations):
         generate_data()
 
@@ -113,8 +120,11 @@ def teardown():
         print_results("Deleting all entries")
 
         """ Retrieve all the hash keys first matching a particular pattern, then iterate and delete each """
+        """ Uses a pipeline to queue up a list of transactions before they are executed in batch """
         for i in redis.scan_iter("locations:*"):
-            print_results("Deleting Key: " + str(i))
+            redis_pipeline.delete(i)
+
+        for i in redis.scan_iter("deviceHash:*"):
             redis_pipeline.delete(i)
 
         redis_pipeline.execute()
@@ -137,6 +147,10 @@ def main(argv):
 
     global numEntries
     numEntries = int(sys.argv[1])
+
+    global iterations
+    iterations = int(sys.argv[2])
+
     generate_data()
 
     simulate_updates()
@@ -144,4 +158,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main(sys.argv[2:])
